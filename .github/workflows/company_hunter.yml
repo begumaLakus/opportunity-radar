@@ -1,0 +1,45 @@
+name: Company Hunter
+
+on:
+  schedule:
+    # Günde 2 kez çalışır: 06:00 ve 15:00 (Türkiye saati, UTC+3) -> 03:00 ve 12:00 UTC
+    # Serper.dev bu iş her çalıştığında en fazla 4 sorgu kullanır (2 x 4 = 8/gün);
+    # 2500 ücretsiz sorgu ile 300 günden fazla dayanır.
+    - cron: '0 3,12 * * *'
+  workflow_dispatch: # Elle test başlatma butonu sunar
+
+permissions:
+  contents: write
+
+jobs:
+  run-hunter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repoyu Klonla
+        uses: actions/checkout@v4
+
+      - name: Python Kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Kütüphaneleri Yükle
+        run: |
+          pip install requests pandas openpyxl
+
+      - name: Şirket Avcısını Çalıştır
+        env:
+          SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python company_hunter.py
+
+      - name: Sonuçları Commit'le
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add hedef_sirketler.xlsx gorulen_sirketler.json arama_durumu.json || true
+          git commit -m "chore: update target companies [skip ci]" || exit 0
+          git push

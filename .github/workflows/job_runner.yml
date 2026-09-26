@@ -1,0 +1,42 @@
+name: LinkedIn Job Radar
+
+on:
+  schedule:
+    # Her 30 dakikada bir otomatik tetiklenir
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Elle test başlatma butonu sunar
+
+permissions:
+  contents: write
+
+jobs:
+  run-radar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repoyu Klonla
+        uses: actions/checkout@v4
+
+      - name: Python Kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Kütüphaneleri Yükle
+        run: |
+          pip install requests beautifulsoup4
+
+      - name: Radar Scriptini Çalıştır
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python job_radar.py
+
+      - name: Görülen İlanları Güncelle
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add gorulen_ilanlar.json || true
+          git commit -m "chore: update seen jobs [skip ci]" || exit 0
+          git push
