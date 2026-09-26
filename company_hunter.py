@@ -87,7 +87,7 @@ def build_company_list():
     last_page_scanned = start_page - 1
     reached_end = False
 
-    print(f"🏢 Hedef şirketler taranıyor (Serper.dev) — {start_page}. sayfadan devam ediliyor...")
+    print(f"🏢 Hedef şirketler taranıyor (Serper.dev), {start_page}. sayfadan devam ediliyor...")
 
     # Serper sayfa başına 10 sonuç döndürür. Her çalıştırmada kaldığımız sayfadan
     # devam ederek (start_page..start_page+PAGES_PER_RUN) her seferinde Google'ın

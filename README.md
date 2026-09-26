@@ -1,13 +1,13 @@
-# İş Arama Otomasyonu
+# Opportunity Radar
 
 LinkedIn ve Google araması üzerinden çalışan, kendi kriterlerime göre iş ilanlarını ve hedef şirketleri tarayıp Telegram üzerinden bana bildirim gönderen iki katmanlı bir otomasyon. GitHub Actions üzerinde zamanlanmış görevler olarak, sunucusuz şekilde çalışır.
 
 ## Nasıl çalışıyor
 
-**1. Katman — İlan Radarı ([job_radar.py](job_radar.py))**
+**1. Katman: İlan Radarı ([job_radar.py](job_radar.py))**
 Belirlenen şehir ve pozisyon anahtar kelimelerine göre LinkedIn'in genel iş ilanı aramasını tarar, seviye/rol filtresinden geçen yeni ilanları Telegram botuna bildirir. Her 30 dakikada bir [GitHub Actions](.github/workflows/job_runner.yml) üzerinden otomatik çalışır.
 
-**2. Katman — Şirket Avcısı ([company_hunter.py](company_hunter.py))**
+**2. Katman: Şirket Avcısı ([company_hunter.py](company_hunter.py))**
 [Serper.dev](https://serper.dev) arama API'si üzerinden hedef şehir/sektör/ölçek kriterlerine uyan LinkedIn şirket sayfalarını bulur, bir Excel dosyasına ekler ve özet bildirimi Telegram'a gönderir. Günde 2 kez [GitHub Actions](.github/workflows/company_hunter.yml) üzerinden çalışır; sayfalama durumunu (`arama_durumu.json`) kaydederek bir sonraki çalıştırmada kaldığı yerden devam eder.
 
 Her iki script de aynı Telegram bildirim ve durum-dosyası mantığını [common.py](common.py) üzerinden paylaşır.
